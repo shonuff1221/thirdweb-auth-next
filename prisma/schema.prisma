@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id            Int      @id @default(autoincrement())
+    walletAddress String   @unique
+    favorites     String[]
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+model Wallet {
+    id            Int                 @id @default(autoincrement())
+    address       String              @unique
+    totalProfit   Float               @default(0)
+    tokenBalances Json                @default("{}")
+    createdAt     DateTime            @default(now())
+    updatedAt     DateTime            @updatedAt
+    transactions  WalletTransaction[]
+}
+
+model WalletTransaction {
+    id            Int      @id @default(autoincrement())
+    walletId      Int
+    wallet        Wallet   @relation(fields: [walletId], references: [id])
+    tokenAddress1 String
+    tokenAddress2 String
+    amount1       Float
+    amount2       Float
+    date          DateTime
+}
+
+model Contract {
+    id        Int      @id @default(autoincrement())
+    address   String   @unique
+    deployer  String
+    liquidity Float
+    createdAt DateTime @default(now())
+}
